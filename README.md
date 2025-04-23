@@ -1,79 +1,98 @@
 # 《STATISTICAL-PREDICTION-AND-MACHINE-LEARNING》
-- project-4
+- Project 4 – Wave Dataset Binary Classification Analysis
 - 2024/6/7
-  
-**〈資料簡介〉**： 
-    
-　　本次專案使用一個知名的 wave 資料集，該資料集最初由 Breiman 等人於1984年提出，後經 Rakotomalala 於 2005 年擴充與修改，成為研究二元分類問題的經典資源，專案目標是透過迴歸模型處理二元分類任務，並應用逐步變數選擇（Stepwise Variable Selection，包括前向選擇 Forward Selection 與後向淘汰 Backward Elimination ）以及 LASSO 方法，識別重要變數並進行特徵選擇。訓練將基於 10,000 個樣本的訓練集進行，隨後在測試集上評估模型分類錯誤率，比較不同方法在變數選擇上的效果與性能。
 
-**資料集背景起源**：
-  - 由 Breiman 等人於 1984 年提出，最初包含 3 個類別與 21 個變數。
-  - 變數基於三個波形中的兩個隨機組合生成，並加入隨機噪聲（noise），模擬真實數據分佈。
-  - Rakotomalala 於 2005 年進行更新：
-      - 樣本數增至33,334個。
-      - 引入 100 個與分類無關的噪聲變數。
-      - 將資料集簡化為二元分類問題，保留原始三類中的前兩類。
+---
 
-**資料集結構**：
-- 訓練 Sample：10,000 個。
-- 測試 Sample：10,000 個
-- 總共 features：121個。
-  - 原始變數：21 個，與波形相關，稱為「active variables」。
-  - 噪聲變數：100 個，完全獨立於分類問題，理論上不影響分類結果。
-- 目標變數 y：二元分類標籤（兩類）。
+## **Project Overview**
 
-**分析概念說明**
-- **目標**：
-  - 使用迴歸模型解決二元分類問題。
-  - 識別重要變數並評估模型在測試集上的分類錯誤率。
-  - 比較 Stepwise Variable Selection 與 LASSO 在變數選擇上的效果。
-- **方法**：
-  1. **Stepwise Variable Selection**：
-     - **Forward Selection**：從無變數開始，逐步加入顯著變數。
-     - **Backward Elimination**：從全變數開始，逐步移除不顯著變數。
-     - 評估標準：顯著性水平（如1%）。
-  2. **LASSO**：
-     - 通過 L1 正則化收縮係數，自動選擇重要變數並排除無關特徵。
-  3. **模型訓練與評估**：
-     - 在 10,000 個訓練樣本上擬合模型；同樣在 10,000 個測試樣本上計算及評估分類結果。
-- **觀察重點**：
-  - 哪些變數被選為重要變數。
-  - Stepwise 與 LASSO 在排除噪聲變數與保留 active variables 上的差異。
-  - 各方法對分類錯誤率的影響。
+This project employs the renowned Wave dataset, originally introduced by Breiman et al. in 1984 and later modified by Rakotomalala in 2005. The objective is to tackle a binary classification problem using regression-based approaches combined with variable selection methods, namely Stepwise Variable Selection (including Forward Selection and Backward Elimination) and LASSO. The study aims to identify the most relevant variables and evaluate classification performance using a test dataset.
 
+---
 
-**〈分析結果〉**：
+## **Dataset Background**
+- **Original Design:** Introduced in 1984 with 3 classes and 21 variables.
+- **Wave Generation:** Variables were generated from random combinations of two of three waveforms, with added noise to simulate real-world conditions.
+- **Modifications by Rakotomalala (2005):**
+  - Increased to 33,334 samples.
+  - Added 100 noise features unrelated to the classification task.
+  - Simplified to a binary classification task using the first two of the original three classes.
 
-- **第一個模型**使用**全部 121 個 features** 進行訓練。  
-- **第二個模型**透過 Feature Selection，只使用 **15 個 features** 進行訓練。  
+---
 
-- **Feature Selection 有效，減少特徵數量並沒有降低模型效能**：  
-  - 使用 **15 個特徵的模型** 取得與 **121 個特徵的模型** 幾乎相同的準確率、精確率、召回率和 AUC，甚至略微提升。
-  - 並**減少了 87.6%（106 個特徵）**，代表大量的特徵可能包含冗餘信息，甚至可能帶來噪聲，影響模型泛化能力。
+## **Dataset Structure**
+- **Training Samples:** 10,000
+- **Testing Samples:** 10,000
+- **Total Features:** 121
+  - **Active Variables:** 21 features associated with the waveforms.
+  - **Noise Variables:** 100 irrelevant features.
+- **Target Variable (y):** Binary class label
 
-- **計算效率提升**：  
-  - **第二個模型更輕量級**，訓練與預測速度更快，適合 **大規模數據處理或即時預測應用**。  
-  - **記憶體與存儲需求大幅降低**，適合部署到資源有限的環境。  
+---
 
-指標比較與分析：
-| 指標 | Model 1（121 特徵） | Model 2（15 特徵） | 差異 |
-|------|-----------------|----------------|------|
-| **Accuracy** | 0.9221 | 0.9238 | **+0.0017** ↑ |
-| **Precision** | 0.9135 | 0.9152 | **+0.0017** ↑ |
-| **Recall** | 0.9311 | 0.9327 | **+0.0016** ↑ |
-| **F1 Score** | 0.9222 | 0.9239 | **+0.0017** ↑ |
-| **AUC-ROC** | 0.9803 | 0.9812 | **+0.0009** ↑ |
+## **Methodology**
 
-**為什麼少特徵的模型仍然表現良好？**
-1. **過多特徵可能導致 Overfitting**
-   - 原始 121 個特徵中，可能有**許多相關性低的特徵**或**高共線性特徵**，這可能讓模型在訓練集表現很好，但在測試集泛化能力下降。
-   - **LASSO 或其他特徵選擇技術** 可能去除了影響泛化能力的噪聲變數，使得 Model 2 更具穩定性。
+### **Objectives:**
+- Apply regression models for binary classification.
+- Perform variable selection and evaluate model performance on test data.
+- Compare the effectiveness of Stepwise Variable Selection and LASSO.
 
-2. **高維度可能影響模型的學習**
-   - 在**高維數據（121 維）** 下，**模型可能難以識別真正影響 y 的關鍵特徵**，導致 noise 影響學習。
-   - **降維（使用 15 個最佳特徵）後，模型更容易學習重要模式**，減少不必要的計算，甚至提升準確度。
+### **Approaches:**
+1. **Stepwise Variable Selection**  
+   - **Forward Selection:** Starts with no variables, adds the most significant one step-by-step.
+   - **Backward Elimination:** Starts with all variables, removes the least significant ones iteratively.
+   - **Criterion:** Significance level (e.g., 1%).
 
-3. **少量高影響力特徵已經足夠**
-   - 只要少數關鍵特徵能夠有效區分目標類別，增加更多特徵的**邊際效益（Marginal Gain）就會遞減**。
-   - **第二個模型的 15 個特徵可能已經包含了所有關鍵資訊**，而其他特徵只是額外噪聲。
+2. **LASSO (Least Absolute Shrinkage and Selection Operator)**  
+   - Uses L1 regularization to shrink coefficients and eliminate irrelevant variables.
+
+3. **Model Training and Evaluation**  
+   - Fit models on 10,000 training samples.
+   - Evaluate classification error on 10,000 test samples.
+
+### **Evaluation Focus:**
+- Key variables selected by each method.
+- Comparative effectiveness in removing noise and retaining active features.
+- Impact on classification error and model generalization.
+
+---
+
+## **Results and Analysis**
+
+### **Models Compared:**
+- **Model 1:** Trained on all 121 features.
+- **Model 2:** Trained on 15 selected features using feature selection.
+
+### **Key Findings:**
+- **Effective Feature Reduction:**
+  - Model 2 (15 features) achieved nearly identical or slightly better metrics compared to Model 1 (121 features).
+  - Feature count reduced by 87.6% (106 features), indicating many features may be redundant or noise.
+
+- **Improved Computational Efficiency:**
+  - Model 2 is lightweight and faster to train/predict.
+  - Suitable for large-scale or real-time applications.
+  - Significantly lower memory/storage requirements, ideal for constrained environments.
+
+### **Performance Metrics:**
+| Metric        | Model 1 (121 Features) | Model 2 (15 Features) | Difference  |
+|---------------|-------------------------|------------------------|-------------|
+| Accuracy      | 0.9221                  | 0.9238                 | **+0.0017** ↑ |
+| Precision     | 0.9135                  | 0.9152                 | **+0.0017** ↑ |
+| Recall        | 0.9311                  | 0.9327                 | **+0.0016** ↑ |
+| F1 Score      | 0.9222                  | 0.9239                 | **+0.0017** ↑ |
+| AUC-ROC       | 0.9803                  | 0.9812                 | **+0.0009** ↑ |
+
+### **Why Model 2 Performs Well with Fewer Features:**
+1. **Overfitting Risk with Too Many Features:**
+   - Many features may have low relevance or multicollinearity, hurting generalization.
+   - Feature selection (LASSO, Stepwise) removes noisy variables and improves robustness.
+
+2. **High Dimensionality Challenges:**
+   - In high dimensions (121 features), models struggle to isolate truly influential variables.
+   - Dimensionality reduction clarifies important patterns and can improve performance.
+
+3. **Sufficiency of Core Features:**
+   - A small set of powerful features may capture most classification-relevant information.
+   - Additional features offer diminishing returns and may introduce noise.
+
 
